@@ -62,7 +62,7 @@ class Payment_Adapter_SnapexPay implements InjectionAwareInterface, FOSSBilling\
         return [
             'supports_one_time_payments' => true,
             'supports_subscriptions' => false,
-            'description' => 'Accept USDT (TRC20, ERC20, BEP20) and other coins via SnapEX Pay. The customer pays on the SnapEX page; FOSSBilling marks the invoice paid from a signed webhook. Set the IPN callback URL below as a webhook endpoint in the SnapEX Pay cabinet. "Enable test mode" creates SnapEX test invoices.',
+            'description' => 'Accept USDT (TRC20, ERC20, BEP20, Solana, TON, Polygon and more) and other coins via SnapEX Pay. The customer pays on the SnapEX page; FOSSBilling marks the invoice paid from a signed webhook. Set the IPN callback URL below as a webhook endpoint in the SnapEX Pay cabinet. "Enable test mode" creates SnapEX test invoices.',
             'logo' => [
                 'logo' => 'snapexpay.png',
                 'height' => '30px',

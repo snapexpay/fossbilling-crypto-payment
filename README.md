@@ -3,18 +3,18 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![FOSSBilling](https://img.shields.io/badge/FOSSBilling-0.8%2B-blue.svg)](https://github.com/FOSSBilling/FOSSBilling)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4.svg)](https://www.php.net/)
-[![USDT](https://img.shields.io/badge/USDT-TRC20%20%7C%20ERC20%20%7C%20BEP20-26a17b.svg)](https://pay.snapex.pro)
+[![USDT](https://img.shields.io/badge/USDT-TRC20%20%7C%20ERC20%20%7C%20BEP20%20%7C%20Solana%20%7C%20TON%20%2B-26a17b.svg)](https://pay.snapex.pro)
 
 [Русская версия](README.ru.md)
 
-A payment adapter for [FOSSBilling](https://github.com/FOSSBilling/FOSSBilling) that lets clients pay invoices in **USDT (TRC20, ERC20, BEP20)** and other coins through [SnapEX Pay](https://snapex.pro). When a client chooses SnapEX Pay on an invoice, the adapter creates a SnapEX Pay invoice and sends the client to the hosted payment page. Once the payment is confirmed, a signed webhook arrives at FOSSBilling's IPN URL, the client is credited and the FOSSBilling invoice is marked paid. You don't have to run a wallet, a node or a blockchain watcher. Funds go to your SnapEX Pay merchant balance.
+A payment adapter for [FOSSBilling](https://github.com/FOSSBilling/FOSSBilling) that lets clients pay invoices in **USDT (TRC20, ERC20, BEP20, Solana, TON, Polygon and more)** and other coins through [SnapEX Pay](https://snapex.pro). When a client chooses SnapEX Pay on an invoice, the adapter creates a SnapEX Pay invoice and sends the client to the hosted payment page. Once the payment is confirmed, a signed webhook arrives at FOSSBilling's IPN URL, the client is credited and the FOSSBilling invoice is marked paid. You don't have to run a wallet, a node or a blockchain watcher. Funds go to your SnapEX Pay merchant balance.
 
 > **Connecting to SnapEX Pay?** Create a merchant account, check the pricing and see every ready-made module on **[pay.snapex.pro](https://pay.snapex.pro)**.
 
 ## Features
 
 - A single-file FOSSBilling payment adapter (`Payment_Adapter_SnapexPay`) that shows up under **System → Payment gateways**.
-- A hosted SnapEX Pay checkout for USDT on TRC20, ERC20 and BEP20, plus other coins offered on the payment page.
+- A hosted SnapEX Pay checkout for USDT on TRC20, ERC20, BEP20, Solana, TON and other networks, plus other coins offered on the payment page.
 - Webhooks are verified with HMAC-SHA256 (`Webhook-Signature`), compared in constant time, and rejected if the timestamp is more than 5 minutes off. On current FOSSBilling builds the signature is checked before the callback is even stored.
 - The webhook body is never trusted on its own. The invoice is read back from the SnapEX API with your key before anything is credited.
 - Payments are booked once. A repeated or retried webhook doesn't credit the client again, and settlement runs under a database lock.
@@ -30,7 +30,7 @@ A payment adapter for [FOSSBilling](https://github.com/FOSSBilling/FOSSBilling) 
 2. The adapter calls `POST /api/v1/merchant/invoices` with the amount in USD, an `Idempotency-Key`, and an `external_id` that identifies this site, the invoice and the billed total. The client gets a *Pay with crypto* button that opens the returned `pay_url`, or is redirected straight away if FOSSBilling asks for auto-redirect.
 3. The client pays on the SnapEX Pay page and comes back to the invoice.
 4. SnapEX Pay sends `invoice.paid` to FOSSBilling's IPN URL: `https://<your-fossbilling>/ipn.php?gateway_id=<id>`.
-5. FOSSBilling stores the callback as a transaction and hands it to the adapter. The adapter checks the signature, fetches `GET /api/v1/merchant/invoices/{id}`, and only proceeds if the status is `paid`. It adds the invoice total to the client's balance and pays the invoice from it. Deposit (add funds) invoices are marked paid directly. The SnapEX invoice id (`inv_…`) becomes the transaction id.
+5. FOSSBilling stores the callback as a transaction and hands it to the adapter. The adapter checks the signature, fetches `GET /api/v1/merchant/invoices/{id}`, and only proceeds if the status is `paid`. It adds the invoice total to the client's balance and pays the invoice from it. Deposit (add funds) invoices are marked paid directly. The SnapEX invoice id (`INV-…`) becomes the transaction id.
 
 Reloading the invoice page reuses the same SnapEX invoice for half of the payment window. After that, or if the total changes, a new SnapEX invoice is created.
 
@@ -87,7 +87,7 @@ In the SnapEX Pay cabinet, add this URL as a webhook endpoint, subscribe it to `
 
 ## Testing
 
-- **Without money:** turn on **Enable Test Mode**, pay an invoice and confirm the test payment on the SnapEX Pay page. The invoice should switch to *Paid*, with one processed transaction whose id is `inv_…`.
+- **Without money:** turn on **Enable Test Mode**, pay an invoice and confirm the test payment on the SnapEX Pay page. The invoice should switch to *Paid*, with one processed transaction whose id is `INV-…`.
 - **Unit checks:** `php tests/run.php` (PHP 8.1+, no dependencies). This covers the adapter contract against FOSSBilling 0.8 models and against current Doctrine entities, signature verification and the replay window, the API request shape, double webhooks, test/live separation, multi-site isolation, amount checks and deposit invoices, using a mocked SnapEX API.
 
 ## FAQ / Troubleshooting
