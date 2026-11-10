@@ -23,6 +23,7 @@ A payment adapter for [FOSSBilling](https://github.com/FOSSBilling/FOSSBilling) 
 - FOSSBilling's **Enable Test Mode** switch creates SnapEX test invoices you can confirm without real money. Test payments are never applied while the gateway is live.
 - Non-USD invoices are converted with a fixed rate or with the currency rates already configured in FOSSBilling.
 - Works with FOSSBilling 0.8.x and with the current development builds.
+- Besides crypto, two more payment methods can be turned on for your SnapEX Pay account on request: Russian rubles by QR code (Russia) and Alipay. Ask us in the chat on [pay.snapex.pro](https://pay.snapex.pro).
 
 ## How it works
 
